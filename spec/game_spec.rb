@@ -18,7 +18,8 @@ RSpec.describe Game do
 
     context 'when player enters wrong command' do
       before do
-        allow(Readline).to receive(:readline).with(any_args).and_return('wrong', 'exit')
+        allow(Readline).to receive(:readline)
+          .with(any_args).and_return('wrong', 'exit')
       end
 
       it 'outputs validation error message' do

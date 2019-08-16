@@ -26,7 +26,7 @@ RSpec.describe Player do
 
     context 'when player move to bottom' do
       let(:direction) { Direction::BOTTOM }
-      
+
       it 'moves to expected position' do
         expect { subject }.to change { player.pos_x }.by(1)
         .and not_change { player.pos_y }

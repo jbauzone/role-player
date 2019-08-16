@@ -7,10 +7,10 @@ require_relative '../lib/map'
 RSpec.describe Map do
   let(:map) do
     blocks = Array.new(2) { Array.new(2) }
-    blocks[0][0] = Block.new
+    blocks[0][0] = Block.new('0-0')
     blocks[0][1] = EmptyBlock.new
-    blocks[1][0] = Block.new
-    blocks[1][1] = Block.new
+    blocks[1][0] = Block.new('1-0')
+    blocks[1][1] = Block.new('1-1')
 
     Map.new(blocks)
   end
