@@ -22,7 +22,7 @@ RSpec.describe Map do
 
     context 'when player is at position 0,0' do
       it 'can only go bottom' do
-        expect(subject).to contain_exactly(Direction::BOTTOM)
+        expect(subject).to contain_exactly(Action::MOVE_BOTTOM)
       end
     end
 
@@ -30,7 +30,7 @@ RSpec.describe Map do
       before { player.move_to(1, 0) }
 
       it 'can go top and right' do
-        expect(subject).to contain_exactly(Direction::TOP, Direction::RIGHT)
+        expect(subject).to contain_exactly(Action::MOVE_TOP, Action::MOVE_RIGHT)
       end
     end
   end

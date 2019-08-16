@@ -11,10 +11,10 @@ class Map
 
   def avalaible_actions(pos_x, pos_y)
     actions = []
-    actions << Direction::TOP if can_move_to_top?(pos_x, pos_y)
-    actions << Direction::BOTTOM if can_move_to_bottom?(pos_x, pos_y)
-    actions << Direction::LEFT if can_move_to_left?(pos_x, pos_y)
-    actions << Direction::RIGHT if can_move_to_right?(pos_x, pos_y)
+    actions << Action::MOVE_TOP if can_move_to_top?(pos_x, pos_y)
+    actions << Action::MOVE_BOTTOM if can_move_to_bottom?(pos_x, pos_y)
+    actions << Action::MOVE_LEFT if can_move_to_left?(pos_x, pos_y)
+    actions << Action::MOVE_RIGHT if can_move_to_right?(pos_x, pos_y)
 
     actions
   end

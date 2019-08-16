@@ -16,7 +16,7 @@ RSpec.describe Player do
     subject { player.move(direction) }
 
     context 'when player move to right' do
-      let(:direction) { Direction::RIGHT }
+      let(:direction) { Action::MOVE_RIGHT }
 
       it 'moves to expected position' do
         expect { subject }.to change { player.pos_y }.by(1)
@@ -25,7 +25,7 @@ RSpec.describe Player do
     end
 
     context 'when player move to bottom' do
-      let(:direction) { Direction::BOTTOM }
+      let(:direction) { Action::MOVE_BOTTOM }
 
       it 'moves to expected position' do
         expect { subject }.to change { player.pos_x }.by(1)
@@ -34,7 +34,7 @@ RSpec.describe Player do
     end
 
     context 'when player move to top' do
-      let(:direction) { Direction::TOP }
+      let(:direction) { Action::MOVE_TOP }
       
       it 'moves to expected position' do
         expect { subject }.to change { player.pos_x }.by(-1)
@@ -43,7 +43,7 @@ RSpec.describe Player do
     end
 
     context 'when player move to left' do
-      let(:direction) { Direction::LEFT }
+      let(:direction) { Action::MOVE_LEFT }
       
       it 'moves to expected position' do
         expect { subject }.to change { player.pos_y }.by(-1)

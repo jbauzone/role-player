@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-require_relative 'direction'
+require_relative 'action'
 
 # Represents a player crossing the map.
 class Player
-  include Direction
-
   attr_reader :pos_x
   attr_reader :pos_y
 
@@ -16,13 +14,13 @@ class Player
 
   def move(direction)
     case direction
-    when Direction::LEFT
+    when Action::MOVE_LEFT
       move_to(@pos_x, @pos_y - 1)
-    when Direction::RIGHT
+    when Action::MOVE_RIGHT
       move_to(@pos_x, @pos_y + 1)
-    when Direction::BOTTOM
+    when Action::MOVE_BOTTOM
       move_to(@pos_x + 1, @pos_y)
-    when Direction::TOP
+    when Action::MOVE_TOP
       move_to(@pos_x - 1, @pos_y)
     end
   end
