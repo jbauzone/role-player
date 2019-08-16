@@ -7,11 +7,6 @@ class Player
   attr_reader :pos_x
   attr_reader :pos_y
 
-  def initialize
-    @pos_x = 0
-    @pos_y = 0
-  end
-
   def move(direction)
     case direction
     when Action::MOVE_LEFT
@@ -28,5 +23,17 @@ class Player
   def move_to(pos_x, pos_y)
     @pos_x = pos_x
     @pos_y = pos_y
+
+    after_move
+  end
+
+  def after_move=(callback)
+    @after_move_callback = callback
+  end
+
+  private
+
+  def after_move
+    @after_move_callback&.call(@pos_x, @pos_y)
   end
 end

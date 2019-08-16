@@ -15,10 +15,16 @@ RSpec.describe Map do
     Map.new(blocks)
   end
 
-  let(:player) { Player.new }
+  describe '#storyline' do
+    subject { map.storyline(1,0) }
+    it { is_expected.to eq '1-0' }
+  end
 
   describe '#avalaible_actions' do
-    subject { map.avalaible_actions(player.pos_x, player.pos_y) }
+    let(:pos_x) { 0 }
+    let(:pos_y) { 0 }
+
+    subject { map.avalaible_actions(pos_x, pos_y) }
 
     context 'when player is at position 0,0' do
       it 'can only go bottom' do
@@ -27,7 +33,8 @@ RSpec.describe Map do
     end
 
     context 'when player is at position 1,0' do
-      before { player.move_to(1, 0) }
+      let(:pos_x) { 1 }
+      let(:pos_y) { 0 }
 
       it 'can go top and right' do
         expect(subject).to contain_exactly(Action::MOVE_TOP, Action::MOVE_RIGHT)

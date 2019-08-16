@@ -19,6 +19,10 @@ class Map
     actions
   end
 
+  def storyline(pos_x, pos_y)
+    @blocks[pos_x][pos_y].message
+  end
+
   private
 
   def can_move_to_top?(pos_x, pos_y)
