@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'lib/enemy'
 require_relative 'lib/player'
 require_relative 'game'
 
@@ -18,10 +17,8 @@ blocks[1][1] = Block.new('You don\'t have any idea of what you are doing, '\
 blocks[1][2] = Block.new('It looks like there is nothing to see here, '\
                          'it`s a dead end.')
 blocks[2][0] = EmptyBlock.new
-
-enemy = Enemy.new(rand(50..150))
 blocks[2][1] = Block.new('OH OH. You found the QUEEN. I know someone '\
-                         'who will have some troubles.', enemy)
+                         'who will have some troubles.')
 blocks[2][2] = EmptyBlock.new
 map = Map.new(blocks)
 
@@ -29,6 +26,7 @@ player = Player.new
 
 game = Game.new(map)
 game.add_player(player)
+game.add_enemy(2, 1)
 game.run
 
 puts 'Good game. You killed the QUEEN, you saved the Humanity.' if game.win?

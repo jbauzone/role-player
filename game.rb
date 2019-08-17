@@ -3,6 +3,7 @@
 require 'readline'
 require_relative 'lib/block'
 require_relative 'lib/empty_block'
+require_relative 'lib/enemy'
 require_relative 'lib/map'
 require_relative 'lib/player'
 
@@ -13,12 +14,19 @@ class Game
     @win = false
     @map = map
     @actions = []
+    @enemies = []
   end
 
   def add_player(player)
     @player = player
     @player.after_move = ->(pos_x, pos_y) { after_player_move(pos_x, pos_y) }
     @player.move_to(0, 0)
+  end
+
+  def add_enemy(pos_x, pos_y)
+    enemy = Enemy.new(rand(50..150))
+    enemy.move_to(pos_x, pos_y)
+    @enemies << enemy
   end
 
   def run
@@ -45,9 +53,17 @@ class Game
 
   def after_player_move(pos_x, pos_y)
     message = @map.storyline(pos_x, pos_y)
-    @actions = @map.avalaible_actions(pos_x, pos_y)
+    @actions = available_actions(pos_x, pos_y)
 
     puts "#{message} (#{@actions.join('/')})"
+  end
+
+  def available_actions(pos_x, pos_y)
+    if enemy_present?(pos_x, pos_y)
+      [Action::HIT]
+    else
+      @map.move_actions(pos_x, pos_y)
+    end
   end
 
   def stop(win = false)
@@ -64,8 +80,18 @@ class Game
     end
   end
 
+  def enemy_present?(pos_x, pos_y)
+    !enemy_at_position(pos_x, pos_y).nil?
+  end
+
+  def enemy_at_position(pos_x, pos_y)
+    @enemies.find do |enemy|
+      enemy.pos_x == pos_x && enemy.pos_y == pos_y
+    end
+  end
+
   def hit_enemy
-    enemy = @map.enemy_on_block(@player.pos_x, @player.pos_y)
+    enemy = enemy_at_position(@player.pos_x, @player.pos_y)
     @player.hit(enemy)
 
     if enemy.dead?

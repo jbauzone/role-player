@@ -3,14 +3,12 @@
 require_relative '../game'
 
 RSpec.describe Game do
-  let(:life) { 60 }
-  let(:enemy) { Enemy.new(life) }
   let(:player) { Player.new }
   let(:game) do
     blocks = Array.new(2) { Array.new(2) }
     blocks[0][0] = Block.new('0-0')
     blocks[0][1] = Block.new('0-1')
-    blocks[1][0] = Block.new('1-0', enemy)
+    blocks[1][0] = Block.new('1-0')
     blocks[1][1] = Block.new('1-1')
 
     map = Map.new(blocks)
@@ -21,7 +19,7 @@ RSpec.describe Game do
     context 'when a player is added to the game' do
       subject { game.add_player(player) }
 
-      it 'player is placed to expected position' do
+      it 'is placed to expected position' do
         allow(game).to receive(:after_player_move).with(any_args)
         subject
         expect(player.pos_x).to eq 0
@@ -35,6 +33,21 @@ RSpec.describe Game do
 
       it 'prints available actions with storyline' do
         expect { subject }.to output("0-0 (bottom/right)\n").to_stdout
+      end
+    end
+  end
+
+  describe '#add_enemy' do
+    context 'when an enemy is added to the game' do
+      subject { game.add_enemy(1, 0) }
+
+      it 'is placed to expected position' do
+        subject
+        enemies_on_game = game.instance_variable_get(:@enemies)
+
+        expect(enemies_on_game.size).to eq 1
+        expect(enemies_on_game.first.pos_x).to eq 1
+        expect(enemies_on_game.first.pos_y).to eq 0
       end
     end
   end
@@ -104,10 +117,15 @@ RSpec.describe Game do
     end
 
     context 'when player moves to block with an enemy' do
+      let(:enemy) { game.instance_variable_get(:@enemies).first }
+      let(:life) { 60 }
       before do
-        game.add_player(player)
+        allow(game).to receive(:rand).and_return(life)
         allow(Readline).to receive(:readline)
           .with(any_args).and_return('bottom', 'hit', 'exit')
+
+        game.add_player(player)
+        game.add_enemy(1, 0)
       end
       subject { game.run }
 
@@ -130,7 +148,7 @@ RSpec.describe Game do
       end
 
       context 'when player kills the enemy' do
-        let(:life) { 50 }
+        let(:life) { 20 }
 
         it 'sets the game as win' do
           expect { subject }.to change { game.win? }.from(false).to(true)

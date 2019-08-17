@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'action'
+
 # Represent a map, a list of blocks that can be crossed
 # or not by a player.
 class Map
@@ -8,29 +10,6 @@ class Map
     @column = blocks[0].size
     @row = blocks.size
   end
-
-  def avalaible_actions(pos_x, pos_y)
-    actions = []
-    block = block_for_position(pos_x, pos_y)
-
-    actions += if block.enemy_to_fight?
-                 [Action::HIT]
-               else
-                 move_actions(pos_x, pos_y)
-               end
-
-    actions
-  end
-
-  def storyline(pos_x, pos_y)
-    @blocks[pos_x][pos_y].message
-  end
-
-  def enemy_on_block(pos_x, pos_y)
-    block_for_position(pos_x, pos_y).enemy
-  end
-
-  private
 
   def move_actions(pos_x, pos_y)
     move_actions = []
@@ -41,6 +20,12 @@ class Map
 
     move_actions
   end
+
+  def storyline(pos_x, pos_y)
+    @blocks[pos_x][pos_y].message
+  end
+
+  private
 
   def can_move_to_top?(pos_x, pos_y)
     pos_x.positive? && block_movable?(pos_x - 1, pos_y)

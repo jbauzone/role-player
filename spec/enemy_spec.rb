@@ -10,4 +10,10 @@ RSpec.describe Enemy do
       expect(enemy).to respond_to(:suffered, :dead?)
     end
   end
+
+  describe 'include Move module' do
+    it 'can move' do
+      expect(enemy).to respond_to(:move, :move_to)
+    end
+  end
 end
