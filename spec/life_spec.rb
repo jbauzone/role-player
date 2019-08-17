@@ -45,11 +45,6 @@ RSpec.describe Life do
       it 'goes down life to 0' do
         expect { subject }.to change { enemy.life }.from(life).to(0)
       end
-
-      it 'calls on_damage_infliged callback' do
-        expect(enemy).to receive(:on_damage_infliged)
-        subject
-      end
     end
 
     context 'damage infliged are lower than current life' do
@@ -57,11 +52,6 @@ RSpec.describe Life do
 
       it 'goes down life to 20' do
         expect { subject }.to change { enemy.life }.from(life).to(20)
-      end
-
-      it 'calls on_damage_infliged callback' do
-        expect(enemy).to receive(:on_damage_infliged)
-        subject
       end
     end
   end

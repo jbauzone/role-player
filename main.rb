@@ -20,10 +20,6 @@ blocks[1][2] = Block.new('It looks like there is nothing to see here, '\
 blocks[2][0] = EmptyBlock.new
 
 enemy = Enemy.new(rand(50..150))
-enemy.on_damage_infliged = lambda do |life|
-  puts "You hit the enemy. Only #{life} XP left."
-end
-
 blocks[2][1] = Block.new('OH OH. You found the QUEEN. I know someone '\
                          'who will have some troubles.', enemy)
 blocks[2][2] = EmptyBlock.new
@@ -34,3 +30,6 @@ player = Player.new
 game = Game.new(map)
 game.add_player(player)
 game.run
+
+puts 'Good game. You killed the QUEEN, you saved the Humanity.' if game.win?
+puts 'See you soon, byebye!'

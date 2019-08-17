@@ -7,7 +7,7 @@ RSpec.describe Enemy do
 
   describe 'include Life module' do
     it 'is vulnerable' do
-      expect(enemy).to respond_to(:suffered, :dead?, :on_damage_infliged=)
+      expect(enemy).to respond_to(:suffered, :dead?)
     end
   end
 end

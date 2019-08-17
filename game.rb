@@ -9,6 +9,8 @@ require_relative 'lib/player'
 # Represents the game.
 class Game
   def initialize(map)
+    @finished = false
+    @win = false
     @map = map
     @actions = []
   end
@@ -20,18 +22,21 @@ class Game
   end
 
   def run
-    loop do
-      input = Readline.readline('> ', true)
-      break if input == 'exit'
+    until @finished
+      input = Readline.readline('> ', true).downcase
 
-      if @actions.include?(input)
+      if input == 'exit'
+        stop
+      elsif @actions.include?(input)
         do_action(input)
       else
-        puts 'You just hit the wall. :('
+        puts 'Unknown action.'
       end
     end
+  end
 
-    puts 'Ok byebye :('
+  def win?
+    @win
   end
 
   private
@@ -43,13 +48,28 @@ class Game
     puts "#{message} (#{@actions.join('/')})"
   end
 
+  def stop(win = false)
+    @finished = true
+    @win = win
+  end
+
   def do_action(action)
     case action
     when Action::MOVE_LEFT, Action::MOVE_RIGHT, Action::MOVE_TOP, Action::MOVE_BOTTOM
       @player.move(action)
     when Action::HIT
-      enemy = @map.enemy_on_block(@player.pos_x, @player.pos_y)
-      @player.hit(enemy)
+      hit_enemy
+    end
+  end
+
+  def hit_enemy
+    enemy = @map.enemy_on_block(@player.pos_x, @player.pos_y)
+    @player.hit(enemy)
+
+    if enemy.dead?
+      stop(true)
+    else
+      puts "** You hit the enemy. Only #{enemy.life} XP left."
     end
   end
 end

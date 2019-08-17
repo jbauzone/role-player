@@ -12,20 +12,9 @@ module Life
 
   def suffered(damage)
     @life = @life >= damage ? @life - damage : 0
-    on_damage_infliged
-  end
-
-  def on_damage_infliged=(callback)
-    @on_damage_infliged_callback = callback
   end
 
   def dead?
     @life.zero?
-  end
-
-  private
-
-  def on_damage_infliged
-    @on_damage_infliged_callback&.call(@life)
   end
 end

@@ -3,7 +3,8 @@
 require_relative '../game'
 
 RSpec.describe Game do
-  let(:enemy) { Enemy.new(60) }
+  let(:life) { 60 }
+  let(:enemy) { Enemy.new(life) }
   let(:player) { Player.new }
   let(:game) do
     blocks = Array.new(2) { Array.new(2) }
@@ -41,11 +42,32 @@ RSpec.describe Game do
   describe '#run' do
     context 'when player enters exit command' do
       before do
-        allow(Readline).to receive(:readline).with(any_args).and_return('exit')
+        allow(Readline).to receive(:readline).with(any_args).and_return(action)
+      end
+      subject { game.run }
+
+      context 'when player enters exit command' do
+        let(:action) { 'exit' }
+
+        it 'does not set the game as win' do
+          expect { subject }.not_to change { game.win? }
+        end
+
+        it 'does not output' do
+          expect { subject }.not_to output.to_stdout
+        end
       end
 
-      it 'outputs goodbye message and exits' do
-        expect { game.run }.to output("Ok byebye :(\n").to_stdout
+      context 'when player enters EXIT command with uppercase' do
+        let(:action) { 'EXIT' }
+
+        it 'is case insensitive & does not set the game as win' do
+          expect { subject }.not_to change { game.win? }
+        end
+
+        it 'does not output' do
+          expect { subject }.not_to output.to_stdout
+        end
       end
     end
 
@@ -56,7 +78,7 @@ RSpec.describe Game do
       end
 
       it 'outputs validation error message' do
-        expect { game.run }.to output(/You just hit the wall\. :\(/).to_stdout
+        expect { game.run }.to output(/Unknown action\./).to_stdout
       end
     end
 
@@ -97,8 +119,22 @@ RSpec.describe Game do
         expect { subject }.to output(/1-0 \(hit\)/).to_stdout
       end
 
+      it 'outputs enemy\'s life' do
+        expect { subject }
+          .to output(/\*\* You hit the enemy. Only 10 XP left./)
+          .to_stdout
+      end
+
       it 'damages enemy life' do
         expect { subject }.to change { enemy.life }.by(-50)
+      end
+
+      context 'when player kills the enemy' do
+        let(:life) { 50 }
+
+        it 'sets the game as win' do
+          expect { subject }.to change { game.win? }.from(false).to(true)
+        end
       end
     end
   end
