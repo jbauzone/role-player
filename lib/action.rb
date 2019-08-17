@@ -6,4 +6,6 @@ module Action
   MOVE_RIGHT = 'right'
   MOVE_TOP = 'top'
   MOVE_BOTTOM = 'bottom'
+
+  HIT = 'hit'
 end

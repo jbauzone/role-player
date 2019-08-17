@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
 require_relative 'action'
+require_relative 'fight'
 
 # Represents a player crossing the map.
 class Player
+  include Fight
+
   attr_reader :pos_x
   attr_reader :pos_y
 

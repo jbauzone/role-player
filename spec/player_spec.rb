@@ -5,6 +5,12 @@ require_relative '../lib/player'
 RSpec.describe Player do
   let(:player) { described_class.new }
 
+  describe 'include Fight module' do
+    it 'can hit' do
+      expect(player).to respond_to(:hit).with(1).argument
+    end
+  end
+
   describe '#move' do
     before { player.move_to(0, 0) }
     subject { player.move(direction) }
@@ -13,8 +19,10 @@ RSpec.describe Player do
       let(:direction) { Action::MOVE_RIGHT }
 
       it 'moves to expected position' do
-        expect { subject }.to change { player.pos_y }.by(1)
-        .and not_change { player.pos_x }
+        expect { subject }
+          .to change { player.pos_y }
+          .by(1)
+          .and not_change { player.pos_x }
       end
     end
 
@@ -22,17 +30,21 @@ RSpec.describe Player do
       let(:direction) { Action::MOVE_BOTTOM }
 
       it 'moves to expected position' do
-        expect { subject }.to change { player.pos_x }.by(1)
-        .and not_change { player.pos_y }
+        expect { subject }
+          .to change { player.pos_x }
+          .by(1)
+          .and not_change { player.pos_y }
       end
     end
 
     context 'when player move to top' do
       let(:direction) { Action::MOVE_TOP }
-      
+
       it 'moves to expected position' do
-        expect { subject }.to change { player.pos_x }.by(-1)
-        .and not_change { player.pos_y }
+        expect { subject }
+          .to change { player.pos_x }
+          .by(-1)
+          .and not_change { player.pos_y }
       end
     end
 
@@ -40,8 +52,10 @@ RSpec.describe Player do
       let(:direction) { Action::MOVE_LEFT }
 
       it 'moves to expected position' do
-        expect { subject }.to change { player.pos_y }.by(-1)
-        .and not_change { player.pos_x }
+        expect { subject }
+          .to change { player.pos_y }
+          .by(-1)
+          .and not_change { player.pos_x }
       end
     end
   end

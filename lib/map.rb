@@ -11,10 +11,13 @@ class Map
 
   def avalaible_actions(pos_x, pos_y)
     actions = []
-    actions << Action::MOVE_TOP if can_move_to_top?(pos_x, pos_y)
-    actions << Action::MOVE_BOTTOM if can_move_to_bottom?(pos_x, pos_y)
-    actions << Action::MOVE_LEFT if can_move_to_left?(pos_x, pos_y)
-    actions << Action::MOVE_RIGHT if can_move_to_right?(pos_x, pos_y)
+    block = block_for_position(pos_x, pos_y)
+
+    actions += if block.enemy_to_fight?
+                 [Action::HIT]
+               else
+                 move_actions(pos_x, pos_y)
+               end
 
     actions
   end
@@ -23,7 +26,21 @@ class Map
     @blocks[pos_x][pos_y].message
   end
 
+  def enemy_on_block(pos_x, pos_y)
+    block_for_position(pos_x, pos_y).enemy
+  end
+
   private
+
+  def move_actions(pos_x, pos_y)
+    move_actions = []
+    move_actions << Action::MOVE_TOP if can_move_to_top?(pos_x, pos_y)
+    move_actions << Action::MOVE_BOTTOM if can_move_to_bottom?(pos_x, pos_y)
+    move_actions << Action::MOVE_LEFT if can_move_to_left?(pos_x, pos_y)
+    move_actions << Action::MOVE_RIGHT if can_move_to_right?(pos_x, pos_y)
+
+    move_actions
+  end
 
   def can_move_to_top?(pos_x, pos_y)
     pos_x.positive? && block_movable?(pos_x - 1, pos_y)
@@ -41,7 +58,11 @@ class Map
     pos_y < @column - 1 && block_movable?(pos_x, pos_y + 1)
   end
 
+  def block_for_position(pos_x, pos_y)
+    @blocks[pos_x][pos_y]
+  end
+
   def block_movable?(pos_x, pos_y)
-    @blocks[pos_x][pos_y].can_move_on?
+    block_for_position(pos_x, pos_y).can_move_on?
   end
 end
