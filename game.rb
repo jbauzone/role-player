@@ -27,10 +27,12 @@ class Game
 
       if input == 'exit'
         stop
+      elsif input == 'help'
+        display_help
       elsif @actions.include?(input)
         do_action(input)
       else
-        puts 'Unknown action.'
+        puts 'Unknown action. See `help` command.'
       end
     end
   end
@@ -71,5 +73,16 @@ class Game
     else
       puts "** You hit the enemy. Only #{enemy.life} XP left."
     end
+  end
+
+  def display_help
+    puts '--- ROLE-PLAYER ---'
+    puts 'Global commands:'
+    puts "* \033[1;4mhelp\033[0m  -   This page."
+    puts "* \033[1;4mexit\033[0m  -   Ends the game. You will fail to save the Humanity and run like a coward."
+    Action.description
+
+    puts ''
+    puts "Current available commands: \033[1;4m#{@actions.join('/')}\033[0m"
   end
 end
