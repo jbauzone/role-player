@@ -119,7 +119,10 @@ RSpec.describe Game do
     context 'when player moves to block with an enemy' do
       let(:enemy) { game.instance_variable_get(:@enemies).first }
       let(:life) { 60 }
+      let(:damages) { 50 }
+
       before do
+        allow(player).to receive(:rand).and_return(damages)
         allow(game).to receive(:rand).and_return(life)
         allow(Readline).to receive(:readline)
           .with(any_args).and_return('bottom', 'hit', 'exit')

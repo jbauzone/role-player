@@ -14,11 +14,14 @@ RSpec.describe Fight do
 
   describe '#hit' do
     context 'when other defines the suffered method' do
+      let(:damages) { 20 }
       let(:enemy) { Enemy.new(150) }
+
+      before { allow(fight_player).to receive(:rand).and_return(damages) }
       subject { fight_player.hit(enemy) }
 
       it 'calls the suffered method' do
-        expect(enemy).to receive(:suffered).with(Fight::DAMAGE_TO_BE_DONE)
+        expect(enemy).to receive(:suffered).with(damages)
         subject
       end
     end

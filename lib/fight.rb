@@ -2,9 +2,15 @@
 
 # Represents a way to fight someone.
 module Fight
-  DAMAGE_TO_BE_DONE = 50
+  MAX_DAMAGE_TO_BE_DONE = 50
 
   def hit(other)
-    other.suffered(DAMAGE_TO_BE_DONE)
+    other.suffered(damages)
+  end
+
+  private
+
+  def damages
+    rand(MAX_DAMAGE_TO_BE_DONE)
   end
 end
