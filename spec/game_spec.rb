@@ -55,12 +55,24 @@ RSpec.describe Game do
   describe '#run' do
     context 'when player enters exit command' do
       before do
-        allow(Readline).to receive(:readline).with(any_args).and_return(action)
+        allow(Readline).to receive(:readline).with(any_args).and_return(action).once
       end
       subject { game.run }
 
       context 'when player enters exit command' do
         let(:action) { 'exit' }
+
+        it 'sets the game as exited' do
+          expect { subject }.to change { game.status }.from(GameStatus::NOT_STARTED).to(GameStatus::EXITED)
+        end
+
+        it 'does not output' do
+          expect { subject }.not_to output.to_stdout
+        end
+      end
+
+      context 'when player enters exit command with spaces after' do
+        let(:action) { 'exit   ' }
 
         it 'sets the game as exited' do
           expect { subject }.to change { game.status }.from(GameStatus::NOT_STARTED).to(GameStatus::EXITED)

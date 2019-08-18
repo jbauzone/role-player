@@ -12,7 +12,6 @@ require_relative 'lib/player'
 class Game
   def initialize(map)
     @status = GameStatus::NOT_STARTED
-    @win = false
     @map = map
     @actions = []
     @enemies = []
@@ -34,7 +33,7 @@ class Game
     @status = GameStatus::IN_PROGRESS
 
     while @status == GameStatus::IN_PROGRESS
-      input = Readline.readline('> ', true).downcase
+      input = Readline.readline('> ', true).downcase.strip
 
       if input == 'exit'
         stop(GameStatus::EXITED)
