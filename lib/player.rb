@@ -9,4 +9,6 @@ class Player
   include Fight
   include Life
   include Move
+
+  attr_accessor :current_available_actions
 end

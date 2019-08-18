@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 require 'readline'
+require_relative 'lib/actions/exit_action'
+require_relative 'lib/actions/help_action'
+require_relative 'lib/actions/hit_action'
+require_relative 'lib/actions/move_action'
+require_relative 'lib/actions/unknown_action'
 require_relative 'lib/block'
 require_relative 'lib/empty_block'
 require_relative 'lib/enemy'
@@ -10,10 +15,11 @@ require_relative 'lib/player'
 
 # Represents the game.
 class Game
+  attr_reader :status
+
   def initialize(map)
     @status = GameStatus::NOT_STARTED
     @map = map
-    @actions = []
     @enemies = []
   end
 
@@ -35,29 +41,40 @@ class Game
     while @status == GameStatus::IN_PROGRESS
       input = Readline.readline('> ', true).downcase.strip
 
-      if input == 'exit'
-        stop(GameStatus::EXITED)
-      elsif input == 'help'
-        display_help
-      elsif @actions.include?(input)
-        do_action(input)
-      else
-        puts 'Unknown action. See `help` command.'
-      end
+      action = case input
+               when 'exit'
+                 Actions::ExitAction.new(self)
+               when 'help'
+                 Actions::HelpAction.new(self, @player)
+               when Action::HIT
+                 enemy = enemy_at_position(@player.pos_x, @player.pos_y)
+                 Actions::HitAction.new(self, @player, enemy)
+               when Action::MOVE_LEFT, Action::MOVE_RIGHT,
+                    Action::MOVE_TOP, Action::MOVE_BOTTOM
+                 Actions::MoveAction.new(self, @player, input)
+               else
+                 Actions::UnknownAction.new(self)
+               end
+
+      action.do
     end
   end
 
-  def status
-    @status
+  def display(message)
+    puts message
+  end
+
+  def stop(status)
+    @status = status
   end
 
   private
 
   def after_player_move(pos_x, pos_y)
     message = @map.storyline(pos_x, pos_y)
-    @actions = available_actions(pos_x, pos_y)
+    @player.current_available_actions = available_actions(pos_x, pos_y)
 
-    puts "#{message} (#{@actions.join('/')})"
+    display("#{message} (#{@player.current_available_actions.join('/')})")
   end
 
   def available_actions(pos_x, pos_y)
@@ -65,19 +82,6 @@ class Game
       [Action::HIT]
     else
       @map.move_actions(pos_x, pos_y)
-    end
-  end
-
-  def stop(status)
-    @status = status
-  end
-
-  def do_action(action)
-    case action
-    when Action::MOVE_LEFT, Action::MOVE_RIGHT, Action::MOVE_TOP, Action::MOVE_BOTTOM
-      @player.move(action)
-    when Action::HIT
-      hit_enemy
     end
   end
 
@@ -89,31 +93,5 @@ class Game
     @enemies.find do |enemy|
       enemy.pos_x == pos_x && enemy.pos_y == pos_y
     end
-  end
-
-  def hit_enemy
-    enemy = enemy_at_position(@player.pos_x, @player.pos_y)
-    @player.hit(enemy)
-
-    if enemy.dead?
-      stop(GameStatus::WON)
-    else
-      puts "** You hit the enemy. Only #{enemy.life} XP left."
-      enemy.hit(@player)
-      return stop(GameStatus::FAILED) if @player.dead?
-
-      puts "** The enemy hits you. You only have #{@player.life} XP now."
-    end
-  end
-
-  def display_help
-    puts '--- ROLE-PLAYER ---'
-    puts 'Global commands:'
-    puts "* \033[1;4mhelp\033[0m  -   This page."
-    puts "* \033[1;4mexit\033[0m  -   Ends the game. You will fail to save the Humanity and run like a coward."
-    Action.description
-
-    puts ''
-    puts "Current available commands: \033[1;4m#{@actions.join('/')}\033[0m"
   end
 end

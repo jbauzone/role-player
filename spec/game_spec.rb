@@ -15,6 +15,8 @@ RSpec.describe Game do
     described_class.new(map)
   end
 
+  before { allow(STDOUT).to receive(:puts) }
+
   describe '#add_player' do
     context 'when a player is added to the game' do
       subject { game.add_player(player) }
@@ -53,17 +55,31 @@ RSpec.describe Game do
   end
 
   describe '#run' do
+    subject { game.run }
+
     context 'when player enters exit command' do
       before do
-        allow(Readline).to receive(:readline).with(any_args).and_return(action).once
+        allow(Readline)
+          .to receive(:readline)
+          .with(any_args)
+          .and_return(action).once
       end
-      subject { game.run }
 
       context 'when player enters exit command' do
         let(:action) { 'exit' }
 
+        it 'calls exit action method' do
+          exit_action = Actions::ExitAction.new(game)
+          expect(Actions::ExitAction).to receive(:new).and_return(exit_action)
+          expect(exit_action).to receive(:do).and_call_original
+          subject
+        end
+
         it 'sets the game as exited' do
-          expect { subject }.to change { game.status }.from(GameStatus::NOT_STARTED).to(GameStatus::EXITED)
+          expect { subject }
+            .to change { game.status }
+            .from(GameStatus::NOT_STARTED)
+            .to(GameStatus::EXITED)
         end
 
         it 'does not output' do
@@ -75,7 +91,10 @@ RSpec.describe Game do
         let(:action) { 'exit   ' }
 
         it 'sets the game as exited' do
-          expect { subject }.to change { game.status }.from(GameStatus::NOT_STARTED).to(GameStatus::EXITED)
+          expect { subject }
+            .to change { game.status }
+            .from(GameStatus::NOT_STARTED)
+            .to(GameStatus::EXITED)
         end
 
         it 'does not output' do
@@ -87,12 +106,29 @@ RSpec.describe Game do
         let(:action) { 'EXIT' }
 
         it 'is case insensitive & sets the game as exited' do
-          expect { subject }.to change { game.status }.from(GameStatus::NOT_STARTED).to(GameStatus::EXITED)
+          expect { subject }
+            .to change { game.status }
+            .from(GameStatus::NOT_STARTED)
+            .to(GameStatus::EXITED)
         end
 
         it 'does not output' do
           expect { subject }.not_to output.to_stdout
         end
+      end
+    end
+
+    context 'when player enters help command' do
+      before do
+        allow(Readline).to receive(:readline)
+          .with(any_args).and_return('help', 'exit')
+      end
+
+      it 'calls help action method' do
+        help_action = Actions::HelpAction.new(game, player)
+        expect(Actions::HelpAction).to receive(:new).and_return(help_action)
+        expect(help_action).to receive(:do)
+        subject
       end
     end
 
@@ -102,8 +138,17 @@ RSpec.describe Game do
           .with(any_args).and_return('wrong', 'exit')
       end
 
+      it 'calls unknown action method' do
+        unknown_action = Actions::UnknownAction.new(game)
+        expect(Actions::UnknownAction)
+          .to receive(:new)
+          .and_return(unknown_action)
+        expect(unknown_action).to receive(:do)
+        subject
+      end
+
       it 'outputs validation error message' do
-        expect { game.run }.to output(/Unknown action\./).to_stdout
+        expect { subject }.to output(/Unknown action\./).to_stdout
       end
     end
 
@@ -113,7 +158,15 @@ RSpec.describe Game do
         allow(Readline).to receive(:readline)
           .with(any_args).and_return('right', 'exit')
       end
-      subject { game.run }
+
+      it 'calls move action method with right direction' do
+        move_action = Actions::MoveAction.new(game, player, 'right')
+        expect(Actions::MoveAction)
+          .to receive(:new)
+          .and_return(move_action)
+        expect(move_action).to receive(:do)
+        subject
+      end
 
       it 'moves the player to right' do
         expect { subject }.to change { player.pos_y }.by(1)
@@ -134,7 +187,9 @@ RSpec.describe Game do
 
       before do
         allow(player).to receive(:rand).and_return(damages)
-        allow_any_instance_of(Enemy).to receive(:rand).and_return(damages)
+        allow_any_instance_of(Enemy)
+          .to receive(:rand)
+          .and_return(damages)
         allow(game).to receive(:rand).and_return(life)
         allow(Readline).to receive(:readline)
           .with(any_args).and_return('bottom', 'hit', 'exit')
@@ -142,7 +197,17 @@ RSpec.describe Game do
         game.add_player(player)
         game.add_enemy(1, 0)
       end
-      subject { game.run }
+
+      it 'calls hit action method' do
+        hit_action = Actions::HitAction.new(
+          game,
+          player,
+          an_instance_of(Enemy)
+        )
+        expect(Actions::HitAction).to receive(:new).and_return(hit_action)
+        expect(hit_action).to receive(:do)
+        subject
+      end
 
       it 'moves the player to bottom' do
         expect { subject }.to change { player.pos_x }.by(1)
@@ -178,7 +243,10 @@ RSpec.describe Game do
         let(:life) { 20 }
 
         it 'sets the game as win' do
-          expect { subject }.to change { game.status }.from(GameStatus::NOT_STARTED).to(GameStatus::WON)
+          expect { subject }
+            .to change { game.status }
+            .from(GameStatus::NOT_STARTED)
+            .to(GameStatus::WON)
         end
       end
     end
