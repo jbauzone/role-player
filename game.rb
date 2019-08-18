@@ -4,13 +4,14 @@ require 'readline'
 require_relative 'lib/block'
 require_relative 'lib/empty_block'
 require_relative 'lib/enemy'
+require_relative 'lib/game_status'
 require_relative 'lib/map'
 require_relative 'lib/player'
 
 # Represents the game.
 class Game
   def initialize(map)
-    @finished = false
+    @status = GameStatus::NOT_STARTED
     @win = false
     @map = map
     @actions = []
@@ -30,11 +31,13 @@ class Game
   end
 
   def run
-    until @finished
+    @status = GameStatus::IN_PROGRESS
+
+    while @status == GameStatus::IN_PROGRESS
       input = Readline.readline('> ', true).downcase
 
       if input == 'exit'
-        stop
+        stop(GameStatus::EXITED)
       elsif input == 'help'
         display_help
       elsif @actions.include?(input)
@@ -45,8 +48,8 @@ class Game
     end
   end
 
-  def win?
-    @win
+  def status
+    @status
   end
 
   private
@@ -66,9 +69,8 @@ class Game
     end
   end
 
-  def stop(win = false)
-    @finished = true
-    @win = win
+  def stop(status)
+    @status = status
   end
 
   def do_action(action)
@@ -95,9 +97,13 @@ class Game
     @player.hit(enemy)
 
     if enemy.dead?
-      stop(true)
+      stop(GameStatus::WON)
     else
       puts "** You hit the enemy. Only #{enemy.life} XP left."
+      enemy.hit(@player)
+      return stop(GameStatus::FAILED) if @player.dead?
+
+      puts "** The enemy hits you. You only have #{@player.life} XP now."
     end
   end
 

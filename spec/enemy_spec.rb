@@ -16,4 +16,10 @@ RSpec.describe Enemy do
       expect(enemy).to respond_to(:move, :move_to)
     end
   end
+
+  describe 'include Fight module' do
+    it 'can hit' do
+      expect(enemy).to respond_to(:hit).with(1).argument
+    end
+  end
 end

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'lib/game_status'
 require_relative 'lib/player'
 require_relative 'game'
 
@@ -22,12 +23,18 @@ blocks[2][1] = Block.new('OH OH. You found the QUEEN. I know someone '\
 blocks[2][2] = EmptyBlock.new
 map = Map.new(blocks)
 
-player = Player.new
+player = Player.new(100)
 
 game = Game.new(map)
 game.add_player(player)
 game.add_enemy(2, 1)
 game.run
 
-puts 'Good game. You killed the QUEEN, you saved the Humanity.' if game.win?
-puts 'See you soon, byebye!'
+case game.status
+when GameStatus::EXITED
+  puts 'See you soon, byebye!'
+when GameStatus::WON
+  puts 'Good game. You killed the QUEEN, you saved the Humanity.'
+when GameStatus::FAILED
+  puts 'You died. :('
+end
